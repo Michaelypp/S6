@@ -52,13 +52,3 @@ formatting, lint, and TypeScript types, then creates a production build in `dist
 The GitHub Actions workflow in `.github/workflows/deploy.yml` builds and deploys
 the game on pushes to `main`. In repository settings, configure GitHub Pages to
 use **GitHub Actions** as its source.
-
-## Credits
-
-Course template: [CMPM 121 D1 starter](https://github.com/ucsc-cmpm-121-f26/d1-starter).
-
-Tooling adapted from the CMPM 121 Fall 2026 S01 starter, which has no explicit
-repository license. No new license is assigned to that material. The D1 scaffold
-and original SVG were authored with OpenAI GPT-6 Astra assistance. Dependencies
-retain their respective licenses. S6 gameplay and interface were created with
-Codex assistance.

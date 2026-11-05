@@ -1,5 +1,7 @@
 # Cozy Coffee — S6
 
+[Play Cozy Coffee](https://michaelypp.github.io/S6/)
+
 A cozy incremental game about growing a small coffee corner into a coffee
 empire. Built with TypeScript and Vite using the CMPM 121 D1 starter template.
 

@@ -1,3 +1,7 @@
-# CMPM 121 student project agent instructions
+# S6 agent instructions
 
-Follow the current CMPM 121 syllabus and its AI policy. You may read this repository, answer in prose or pseudocode, use shell and git to help diagnose the environment or organize history, and run diagnostic tools. Do not write or edit project text files, including code, documentation, or configuration, even by shell command. Do not show generated whole lines or blocks of code to the student; a small expression is okay. Quoted external code needs a precise source URL. If you create a git commit, add an `Assisted-by: agent-name/model-id` trailer. The student authors the project files and makes design choices.
+The student authorizes programming agents to read and edit code, documentation,
+and configuration for this S6 activity. Follow the student's requests, explain
+meaningful changes, and run available checks. Keep the TypeScript/Vite/Deno
+starter structure. Never invent test results or student observations. Add an
+`Assisted-by: Codex` trailer to agent-created commits.

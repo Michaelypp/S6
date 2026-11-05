@@ -40,16 +40,28 @@ export interface State {
   total: number;
   clicks: number;
   owned: number[];
+  betterBeans: boolean;
   savedAt: number;
 }
+export const betterBeansCost = 50;
 export function fresh(): State {
   return {
     beans: 0,
     total: 0,
     clicks: 0,
     owned: upgrades.map(() => 0),
+    betterBeans: false,
     savedAt: Date.now(),
   };
+}
+export function manualBrew(state: State): number {
+  return state.betterBeans ? 2 : 1;
+}
+export function buyBetterBeans(state: State): boolean {
+  if (state.betterBeans || state.beans < betterBeansCost) return false;
+  state.beans -= betterBeansCost;
+  state.betterBeans = true;
+  return true;
 }
 export function cost(index: number, owned: number): number {
   return Math.ceil(upgrades[index].base * 1.15 ** owned);
@@ -76,11 +88,12 @@ export function restore(raw: string | null): State {
       ) || !Array.isArray(data.owned) ||
       data.owned.length !== upgrades.length || !data.owned.every((n: number) =>
         Number.isSafeInteger(n) && n >= 0 && n <= 1000
-      ) || data.total < data.beans
+      ) || data.total < data.beans ||
+      (data.betterBeans !== undefined && typeof data.betterBeans !== "boolean")
     ) {
       return fresh();
     }
-    return data;
+    return { ...data, betterBeans: data.betterBeans === true };
   } catch {
     return fresh();
   }

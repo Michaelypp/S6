@@ -1,5 +1,15 @@
 import "./style.css";
-import { buy, cost, fresh, production, restore, upgrades } from "./game.ts";
+import {
+  betterBeansCost,
+  buy,
+  buyBetterBeans,
+  cost,
+  fresh,
+  manualBrew,
+  production,
+  restore,
+  upgrades,
+} from "./game.ts";
 const key = "s6-cozy-coffee-v1";
 let stored: string | null = null;
 try {
@@ -20,7 +30,7 @@ const app = document.querySelector<HTMLElement>("#app")!;
 app.innerHTML = `
 <header><a class="brand" href="./">☕ &nbsp; COZY COFFEE</a><span class="tag">S6 · INCREMENTAL GAME</span></header>
 <section class="intro"><span class="eyebrow">A LITTLE COFFEE. A LOT OF POSSIBILITY.</span><h1>Good things<br>start with a cup.</h1><p>From your first pour to a city full of cafés.<br>Brew, grow, and make yourself at home.</p></section>
-<div class="game"><section class="brew panel"><div class="live"><span></span> YOUR COFFEE CORNER</div><div class="balance"><strong id="beans">0</strong><span>coffee beans</span></div><button id="brew" aria-label="Brew coffee, earn one bean"><span class="steam">∿ ∿ ∿</span><span class="cup">☕</span></button><div class="brew-label">Click to brew <span>+1 bean</span></div><div class="stats"><div><strong id="rate">0</strong><span>beans / second</span></div><div><strong id="total">0</strong><span>all-time beans</span></div></div></section>
+<div class="game"><section class="brew panel"><div class="live"><span></span> YOUR COFFEE CORNER</div><div class="balance"><strong id="beans">0</strong><span>coffee beans</span></div><button id="brew" aria-label="Brew coffee, earn one bean"><span class="steam">∿ ∿ ∿</span><span class="cup">☕</span></button><div class="brew-label">Click to brew <span id="brew-gain">+1 bean</span></div><div class="stats"><div><strong id="rate">0</strong><span>beans / second</span></div><div><strong id="total">0</strong><span>all-time beans</span></div></div><div class="perk"><button id="better-beans" class="upgrade" aria-label="Better beans upgrade"><span class="icon">🫘</span><span class="details"><strong>Better beans</strong><span>Freshly ground. Manual brewing doubles.</span><em id="better-beans-status">One-time upgrade</em></span><span class="price" id="better-beans-price"></span></button></div></section>
 <section class="shop panel"><div class="shop-heading"><div><span class="eyebrow">MAKE ROOM FOR MORE</span><h2>Grow your corner</h2></div><span class="leaf">✿</span></div><p class="hint">Every upgrade earns beans automatically.</p><div id="upgrades">${
   upgrades.map((item, i) =>
     `<button class="upgrade" data-index="${i}"><span class="icon">${item.icon}</span><span class="details"><strong>${item.name} <small id="owned-${i}">0 owned</small></strong><span>${item.description}</span><em>+${
@@ -40,6 +50,17 @@ function render() {
   el("beans").textContent = format(state.beans);
   el("rate").textContent = format(production(state));
   el("total").textContent = format(state.total);
+  el("brew-gain").textContent = `+${manualBrew(state)} bean${
+    manualBrew(state) > 1 ? "s" : ""
+  }`;
+  el("better-beans-price").textContent = state.betterBeans
+    ? "Purchased"
+    : `${format(betterBeansCost)} beans`;
+  el("better-beans-status").textContent = state.betterBeans
+    ? "Brewing +2 beans per click"
+    : "One-time upgrade";
+  (el("better-beans") as HTMLButtonElement).disabled = state.betterBeans ||
+    state.beans < betterBeansCost;
   upgrades.forEach((_, i) => {
     const price = cost(i, state.owned[i]);
     el(`price-${i}`).textContent = `${format(price)} beans`;
@@ -69,8 +90,9 @@ function save() {
   }
 }
 el("brew").addEventListener("click", () => {
-  state.beans++;
-  state.total++;
+  const gain = manualBrew(state);
+  state.beans += gain;
+  state.total += gain;
   state.clicks++;
   render();
 });
@@ -81,6 +103,13 @@ el("upgrades").addEventListener("click", (event) => {
   if (button && buy(state, Number(button.dataset.index))) {
     render();
     save();
+  }
+});
+el("better-beans").addEventListener("click", () => {
+  if (buyBetterBeans(state)) {
+    render();
+    save();
+    el("status").textContent = "Better beans! Manual brewing now earns two.";
   }
 });
 el("reset").addEventListener("click", () => {
